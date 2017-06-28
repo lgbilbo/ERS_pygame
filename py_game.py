@@ -6,13 +6,17 @@ import card
 # Display width and height
 DISP_WIDTH = 800
 DISP_HEIGHT = 600
+
+# Determines frames per second
+FRAME_RATE = 30
+
 WHITE = (255,255,255)
 LIGHT_GREEN = (60,200,0)
 BLACK = (0,0,0)
 BLUE = (0,0,155)
 GREEN = (0,155,0)
 
-# Render message at location x, y
+# Render message at location x, y on screen
 def render_text(screen, font_size, message, x, y, color):
 	disp_width = screen.get_width();
 	disp_height = screen.get_height();
@@ -21,7 +25,7 @@ def render_text(screen, font_size, message, x, y, color):
 	text = font.render(message, False, color)
 	screen.blit(text, (x, y))
 
-# Score Box
+# Render/update score box
 def disp_score(screen, score):
 	disp_width = screen.get_width();
 	disp_height = screen.get_height();
@@ -86,8 +90,9 @@ def game_over(screen):
 	render_text(screen, 80, "GAME OVER", \
 		disp_width*0.31, disp_height*0.4, BLACK)
 	pygame.display.update()
-	pygame.time.wait(3000)
-	check_quit()
+	for i in range(100):
+		pygame.time.wait(FRAME_RATE)
+		check_quit()
 
 # Generate welcome screen
 def generate_welcome(screen):
@@ -127,6 +132,7 @@ def generate_welcome(screen):
 	waiting = True
 	while waiting:
 		check_quit()
+		pygame.time.wait(FRAME_RATE)
 		if pygame.mouse.get_pos()[0] > (disp_width-w)/2 and pygame.mouse.get_pos()[0] < (disp_width+w)/2 and \
 			pygame.mouse.get_pos()[1] > disp_height*0.8 and pygame.mouse.get_pos()[1] < disp_height*0.8+h and \
 			pygame.mouse.get_pressed()[0]:
@@ -152,10 +158,11 @@ def play_game(screen):
 
 	while score > 0:
 		index = flip_card(index, used, screen)
-		pygame.time.wait(wait_time)
 
-		# Check if user is trying to quit
-		check_quit()
+		# Wait for wait_time ms
+		for i in range(wait_time/FRAME_RATE):
+			pygame.time.wait(FRAME_RATE)
+			check_quit()
 
 		# Check if user has pressed a key and update
 		# score and speed accordingly
@@ -175,6 +182,7 @@ def play_game(screen):
 
 		# Update score on screen
 		disp_score(screen, score)
+
 
 	# Print game over message
 	game_over(screen)
